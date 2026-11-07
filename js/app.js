@@ -138,7 +138,7 @@
   function variantsBlock(s) {
     const variants = s.variants || [];
     if (!variants.length) return '';
-    const purpose = (s.sections && s.sections.variants) || '';
+    const purpose = sectionPurpose(s, 'variants');
     const body = variants.map(v =>
       '<div class="variant"><span class="vid">' + escapeHtml(v.id || '') + '</span>' +
       '<strong>' + escapeHtml(v.name || '') + '</strong>' +
@@ -153,6 +153,17 @@
     );
   }
 
+  function sectionPurpose(skill, key) {
+    const sec = skill.sections;
+    if (!sec) return '';
+    if (Array.isArray(sec)) {
+      const hit = sec.find(s => s && s.id === key);
+      return (hit && (hit.purpose || hit.does || hit.title)) || '';
+    }
+    if (typeof sec === 'object') return sec[key] || '';
+    return '';
+  }
+
   function renderDetail(catalog, id) {
     const root = qs('#skill-detail');
     if (!root) return;
@@ -162,7 +173,15 @@
       return;
     }
     document.title = skill.title + ' · BoBo Front-end Design Skills';
-    const sec = skill.sections || {};
+    const sec = {
+      whenToApply: sectionPurpose(skill, 'whenToApply'),
+      mechanism: sectionPurpose(skill, 'mechanism'),
+      visualSpec: sectionPurpose(skill, 'visualSpec'),
+      cssNotes: sectionPurpose(skill, 'cssNotes'),
+      variants: sectionPurpose(skill, 'variants'),
+      dontDo: sectionPurpose(skill, 'dontDo'),
+      steps: sectionPurpose(skill, 'steps')
+    };
     const demoPath = skill.demo
       ? (location.pathname.includes('/skills/') ? '../../' + skill.demo : skill.demo)
       : null;
@@ -181,10 +200,25 @@
           (skill.tags || []).map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join('') +
         '</div>' +
       '</div>' +
+      (function promptsOverview() {
+        const prompts = skill.prompts || (Array.isArray(skill.sections) ? skill.sections : null);
+        if (!prompts || !prompts.length) return '';
+        const lis = prompts.map(pr =>
+          '<li><strong>' + escapeHtml(pr.title || pr.id || '') + '：</strong>' +
+          escapeHtml(pr.purpose || pr.does || '') + '</li>'
+        ).join('');
+        return (
+          '<section class="block">' +
+            '<h2>每一段 prompt／章節係做緊咩</h2>' +
+            '<p class="purpose">呢段總覽每個章節嘅用途，方便對照實作同寫 AI skill。</p>' +
+            '<ul>' + lis + '</ul>' +
+          '</section>'
+        );
+      })() +
       listBlock('When to apply', sec.whenToApply, skill.whenToApply) +
       listBlock('Mechanism', sec.mechanism, skill.mechanism) +
       objectBlock('Visual spec', sec.visualSpec, skill.visualSpec) +
-      listBlock('Steps', '實作步驟（suggested）', skill.steps) +
+      listBlock('Steps', sec.steps || '實作步驟（suggested）', skill.steps) +
       listBlock('CSS / interaction 要點', sec.cssNotes, skill.cssNotes) +
       variantsBlock(skill) +
       listBlock('唔好做咩', sec.dontDo, skill.dontDo, 'dont') +
