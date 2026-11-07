@@ -73,20 +73,31 @@
       }
       empty.hidden = true;
       list.forEach(s => {
-        const a = document.createElement('a');
-        a.className = 'card';
-        a.href = skillHref(s.id, 'pretty');
+        const card = document.createElement('article');
+        card.className = 'card';
+        const href = skillHref(s.id, 'pretty');
         const tags = (s.tags || []).slice(0, 4).map(t =>
           '<span class="tag">' + escapeHtml(t) + '</span>'
         ).join('');
         const pri = s.priority ? '<span class="tag priority">priority</span>' : '';
-        a.innerHTML =
+        const demoRel = s.demo ? String(s.demo) : ('demos/' + s.id + '.html');
+        const summary = s.summary
+          ? '<p class="desc summary">' + escapeHtml(s.summary) + '</p>'
+          : '';
+        card.innerHTML =
           '<div class="id">' + escapeHtml(s.id) + '</div>' +
-          '<h2>' + escapeHtml(s.title) + '</h2>' +
+          '<h2><a class="card-title" href="' + escapeHtml(href) + '">' + escapeHtml(s.title) + '</a></h2>' +
           '<p class="desc">' + escapeHtml(s.description) + '</p>' +
-          (s.summary ? '<p class="desc" style="color:#b7c9d1">' + escapeHtml(s.summary) + '</p>' : '') +
-          '<div class="tags">' + pri + tags + '</div>';
-        grid.appendChild(a);
+          summary +
+          '<div class="tags">' + pri + tags + '</div>' +
+          '<div class="card-actions">' +
+            '<button type="button" class="preview-toggle" aria-expanded="false" data-demo="' + escapeHtml(demoRel) + '">Show preview</button>' +
+            '<a class="card-more" href="' + escapeHtml(href) + '">詳情 →</a>' +
+          '</div>' +
+          '<div class="card-preview" hidden>' +
+            '<div class="card-preview-frame"></div>' +
+          '</div>';
+        grid.appendChild(card);
       });
     }
 
@@ -100,7 +111,37 @@
     if (search) {
       search.addEventListener('input', () => { query = search.value || ''; paint(); });
     }
+    // Preview: only load iframe after "Show preview" is clicked
+    grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.preview-toggle');
+      if (!btn || !grid.contains(btn)) return;
+      e.preventDefault();
+      const card = btn.closest('.card');
+      const panel = card && card.querySelector('.card-preview');
+      const frameHost = card && card.querySelector('.card-preview-frame');
+      if (!panel || !frameHost) return;
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      if (open) {
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = 'Show preview';
+        panel.hidden = true;
+        frameHost.innerHTML = '';
+        return;
+      }
+      btn.setAttribute('aria-expanded', 'true');
+      btn.textContent = 'Hide preview';
+      panel.hidden = false;
+      if (!frameHost.querySelector('iframe')) {
+        const iframe = document.createElement('iframe');
+        iframe.title = 'Skill preview';
+        iframe.loading = 'lazy';
+        iframe.src = btn.dataset.demo;
+        frameHost.appendChild(iframe);
+      }
+    });
+
     paint();
+
   }
 
   function escapeHtml(str) {

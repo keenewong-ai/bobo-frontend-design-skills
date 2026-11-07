@@ -140,3 +140,33 @@ footer.site {
   .demo-frame iframe { height: 720px; }
   .detail-head h1 { font-size: 22px; }
 }
+
+.card .card-title { color: inherit; text-decoration: none; }
+.card .card-title:hover { text-decoration: underline; color: var(--accent2); }
+.card .desc.summary { color: #b7c9d1; font-size: 12px; }
+.card-actions {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  margin-top: 6px;
+}
+.preview-toggle {
+  border: 1px solid var(--border); background: var(--panel); color: var(--text);
+  border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 12px; font-weight: 800;
+  cursor: pointer;
+}
+.preview-toggle:hover { border-color: #3d5560; }
+.preview-toggle[aria-expanded="true"] {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #0b1020;
+}
+.card-more { font-size: 12px; font-weight: 800; margin-left: auto; }
+.card-preview {
+  margin-top: 8px; border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; background: #0c1115;
+}
+.card-preview-frame iframe {
+  display: block; width: 100%; height: 280px; border: 0; background: #131f24;
+}
+@media (max-width: 560px) {
+  .card-preview-frame iframe { height: 320px; }
+}
