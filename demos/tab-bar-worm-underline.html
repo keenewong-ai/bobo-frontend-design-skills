@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Worm Underline</title>
+<style>
+  :root { --bg:#131f24; --panel:#0f171b; --text:#E8EEF1; --muted:#8FA3AD; --border:#2c3c44; --accent:#8B5CF6; --cyan:#22D3EE; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { font-size:16px; margin:0 0 4px; font-weight:900; }
+  .lead { color:var(--muted); font-size:12px; margin:0 0 14px; line-height:1.5; }
+  .phone { max-width:340px; background:var(--panel); border:2px solid var(--border); border-radius:18px; overflow:hidden; }
+  .screen { height:110px; display:grid; place-items:center; color:var(--muted); font-size:13px; font-weight:800; border-bottom:1px dashed #2c3c44; }
+  .bar { display:grid; grid-template-columns:repeat(4,1fr); background:#16161c; padding:8px 6px 12px; position:relative; }
+  .tab { border:0; background:transparent; color:#7a7a8a; cursor:pointer; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px; -webkit-tap-highlight-color:transparent; position:relative; }
+  .tab .ico { font-size:20px; line-height:1; width:28px; height:28px; display:grid; place-items:center; }
+  .tab .lbl { font-size:10px; font-weight:800; }
+  .tab.is-active { color:#E8EEF1; }
+  
+  .underline { position:absolute; bottom:6px; height:3px; border-radius:999px;
+    background:linear-gradient(90deg,var(--accent),var(--cyan)); width:28px; left:0;
+    transition: left .32s cubic-bezier(.45,.05,.2,1), width .32s cubic-bezier(.45,.05,.2,1); pointer-events:none; }
+  .screen-inner { display:flex; width:400%; transition: transform .3s ease; }
+  .screen-inner > div { width:25%; flex:0 0 25%; display:grid; place-items:center; height:110px; }
+
+</style>
+</head>
+<body>
+  <h1>TAB · Worm Underline</h1>
+  <p class="lead">點 tab 試動畫 · suggested demo（非 production 量度）</p>
+  
+<div class="phone">
+  <div class="screen" style="padding:0;overflow:hidden">
+    <div class="screen-inner" id="pages">
+      <div>Home</div><div>Search</div><div>Activity</div><div>Profile</div>
+    </div>
+  </div>
+  <nav class="bar" id="bar" aria-label="tabs">
+    <div class="underline" id="ul"></div>
+    <button class="tab is-active" type="button" data-i="0"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-i="1"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-i="2"><span class="ico">✧</span><span class="lbl">Activity</span></button>
+    <button class="tab" type="button" data-i="3"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+
+<script>
+
+(function(){
+  const bar=document.getElementById('bar'), ul=document.getElementById('ul'), pages=document.getElementById('pages');
+  const tabs=[...bar.querySelectorAll('.tab')];
+  function move(i){
+    const t=tabs[i], r=t.getBoundingClientRect(), br=bar.getBoundingClientRect();
+    // worm: stretch toward target then settle — approximate with width pulse via rAF
+    const left=r.left-br.left+(r.width-28)/2;
+    ul.style.width='48px';
+    requestAnimationFrame(()=>{ ul.style.left=left+'px'; setTimeout(()=>{ ul.style.width='28px'; }, 160); });
+    tabs.forEach(x=>x.classList.toggle('is-active', x===t));
+    pages.style.transform='translateX('+(-i*25)+'%)';
+  }
+  move(0);
+  bar.addEventListener('click',e=>{ const t=e.target.closest('.tab'); if(!t) return; move(+t.dataset.i); });
+})();
+
+</script>
+</body>
+</html>

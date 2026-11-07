@@ -1,0 +1,371 @@
+{
+  "version": 1,
+  "updated": "2026-11-07",
+  "source": "Personal OS demos reel (Tab Bar · タブの切り替え · Part 2)",
+  "schema": {
+    "required": ["id", "title", "description", "category", "whenToApply", "visualSpec", "cssNotes", "dontDo"],
+    "optional": ["summary", "tags", "variants", "steps", "sections", "demo", "source"]
+  },
+  "skills": [
+    {
+      "id": "tab-bar-worm-underline",
+      "title": "Worm Underline",
+      "description": "The underline inches like a worm to the new tab while the pages slide.",
+      "summary": "底線如蟲爬向新 tab，頁面同步滑動。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "underline", "slide", "indicator"],
+      "whenToApply": [
+        "底部或頂部文字／icon tab，需要清晰「而家喺邊」指示器",
+        "內容區本身已有水平滑頁（swipe / pager），想同 indicator 同步",
+        "品牌語氣偏柔和、有機，唔想用硬切色塊"
+      ],
+      "visualSpec": {
+        "bar": "通常淺底或深底均可；indicator 用 2–3px 高、圓角膠囊底線",
+        "motion": "底線由舊 tab 中心「蠕動」拉長再縮短到新 tab（worm / stretch morph），唔係瞬移",
+        "pages": "內容區跟住滑動，方向同 underline 一致（suggested default ~280–360ms）",
+        "timing": "suggested defaults（未從 production 量度）：underline ~320ms ease-in-out；page slide ~300ms"
+      },
+      "steps": [
+        "量度 active tab 同目標 tab 嘅 left/width（或用 CSS anchor / shared element）",
+        "將 underline 先水平拉伸覆蓋兩 tab 之間距離（worm body）",
+        "再收縮並移動到目標 tab 正下方",
+        "同步平移 page container（transform: translateX）"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：需要柔和位置指示、同 pager 聯動",
+        "visualSpec": "視覺規格：蠕動底線 + 頁面滑動",
+        "cssNotes": "CSS／互動要點：width/left 或 scaleX+translate；prefer transform",
+        "variants": "變體：短 pill vs 全寬 underline；跟色 vs 固定強調色",
+        "dontDo": "唔好做：瞬移底線、同頁面方向相反、拖慢到超過 ~500ms"
+      },
+      "cssNotes": [
+        "Prefer transform (scaleX + translateX) over animating left/width when可能，減少 layout thrash",
+        "Underline 放喺獨立 layer（position absolute under tabs），pointer-events: none",
+        "尊重 prefers-reduced-motion：改為瞬間跳位或短 crossfade",
+        "Suggested: border-radius: 999px; height: 2–3px; background: accent"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel soft worm",
+          "description": "短膠囊底線、暗色 bar；蠕動路徑明顯（suggested reel look）。"
+        },
+        {
+          "id": "B",
+          "name": "Full-width track",
+          "description": "Underline 幾乎同 label 等寬；適合文字 tab（Material-ish）。"
+        }
+      ],
+      "dontDo": [
+        "唔好令 underline 瞬移（會睇落似 bug）",
+        "唔好同 page slide 反向",
+        "唔好喺超過 5–6 個 tab 仲用超長 worm——路程太長會眼花"
+      ],
+      "demo": "demos/tab-bar-worm-underline.html",
+      "source": "Personal OS demos reel (Tab Bar · Part 2) · pattern library target（現行 Personal OS bottom-nav 仍係簡單 active color swap）"
+    },
+    {
+      "id": "tab-bar-hopping-dot",
+      "title": "Hopping Dot",
+      "description": "A glowing dot hops in an arc to the new tab and squishes as it lands.",
+      "summary": "發光圓點拋物線跳去新 tab，落地擠壓。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "dot", "bounce", "playful"],
+      "whenToApply": [
+        "想加強「揀咗呢個」嘅趣味回饋（消費／生活類 app）",
+        "Tab 數量少（建議 ≤5），跳躍距離唔會太遠",
+        "Icon 為主、label 細或可隱藏"
+      ],
+      "visualSpec": {
+        "dot": "小圓點（~6–10px），帶 glow（box-shadow / filter）；顏色用 accent",
+        "path": "由舊 tab 上方／下方沿弧線 hop 到新 tab（建議二次貝塞爾或兩段 translate）",
+        "squash": "落地時 scaleY 壓扁、scaleX 拉闊，再 spring 回 1（suggested ~120ms squash + 180ms settle）",
+        "timing": "suggested total hop ~400–520ms"
+      },
+      "steps": [
+        "讀取 from/to tab 中心座標",
+        "Dot 沿弧線移動（CSS offset-path 或 JS keyframes mid-point elevate）",
+        "接近目標時觸發 squash keyframes",
+        "可選：落地輕微 haptic（mobile）"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：玩味回饋、少 tab",
+        "visualSpec": "視覺規格：弧線 hop + landing squash",
+        "cssNotes": "CSS／互動：offset-path 或 keyframed translate；glow",
+        "variants": "變體：單色 glow vs 漸變拖尾",
+        "dontDo": "唔好做：直線滑（唔係 hop）、無 squash、過度彈跳"
+      },
+      "cssNotes": [
+        "可用 @keyframes with translate + mid-keyframe negative translateY for arc",
+        "落地 squash：transform: scale(1.25, 0.7) → spring back",
+        "will-change: transform；完結後清走避免佔 layer",
+        "prefers-reduced-motion：淡入新位置，跳過 hop"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Glowing hop",
+          "description": "明顯 glow + 高弧線（reel 感覺）。"
+        },
+        {
+          "id": "B",
+          "name": "Subtle hop",
+          "description": "低弧、無拖尾；適合偏生產力 UI。"
+        }
+      ],
+      "dontDo": [
+        "唔好用直線平移冒充 hop",
+        "唔好無限 bounce（一次落地即可）",
+        "Tab 好多／距離極遠時改用 worm 或 fade"
+      ],
+      "demo": "demos/tab-bar-hopping-dot.html",
+      "source": "Personal OS demos reel (Tab Bar · Part 2) · suggested defaults"
+    },
+    {
+      "id": "tab-bar-spotlight",
+      "title": "Spotlight",
+      "description": "A spotlight slides along the bar and swings, lighting up the new icon.",
+      "summary": "聚光燈沿 bar 滑動並擺動，照亮新 icon。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "spotlight", "glow", "dark"],
+      "whenToApply": [
+        "暗色 tab bar／夜間模式，想用光影表達 focus",
+        "Icon 線條細，需要額外「被照亮」狀態",
+        "想製造舞台／展會感（娛樂、媒體）"
+      ],
+      "visualSpec": {
+        "light": "橢圓或圓錐形 soft gradient（白／暖白，低 opacity）置於 icon 後方或上方",
+        "motion": "聚光由舊位滑到新位；可加輕微 swing（rotate ±6–10°）再回正",
+        "icons": "被照亮 icon 提高亮度／描邊；其他保持 dim gray",
+        "timing": "suggested slide ~360ms ease-out；swing settle ~200ms"
+      },
+      "steps": [
+        "Spotlight layer 跟住目標 tab 中心 x",
+        "移動期間可加 rotate 擺動 keyframes",
+        "到達後 icon color → lit；舊 icon → dim",
+        "可選 soft vignette 喺 bar 兩側"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：暗色 bar、光影 focus",
+        "visualSpec": "視覺規格：滑動聚光 + swing",
+        "cssNotes": "CSS：radial-gradient mask、filter、transform",
+        "variants": "變體：頂部射燈 vs 背後光暈",
+        "dontDo": "唔好做：過曝、亮色底用強 spotlight"
+      },
+      "cssNotes": [
+        "background: radial-gradient(ellipse, rgba(255,255,255,.35), transparent 70%)",
+        "mix-blend-mode: screen 喺深色 bar 上效果好",
+        "Swing：keyframes rotate(-8deg) → 8deg → 0",
+        "亮色主題改用淡色 pill，唔好硬套強光"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Swing spotlight",
+          "description": "滑動時明顯擺動（reel）。"
+        },
+        {
+          "id": "B",
+          "name": "Soft halo",
+          "description": "無 swing，只有柔光跟隨；更克制。"
+        }
+      ],
+      "dontDo": [
+        "唔好喺淺色 bar 用過亮 spotlight（洗白）",
+        "唔好令非 active icon 完全睇唔到",
+        "唔好忽略對比度／可讀性"
+      ],
+      "demo": "demos/tab-bar-spotlight.html",
+      "source": "Personal OS demos reel (Tab Bar · Part 2) · suggested defaults"
+    },
+    {
+      "id": "tab-bar-ripple-fill",
+      "title": "Ripple Fill",
+      "description": "A violet → cyan ripple fills the tapped tab from its center. The old fades.",
+      "summary": "紫→青 ripple 由中心填滿被點 tab；舊 active 原地淡出。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "ripple", "fill", "priority", "personal-os"],
+      "priority": 1,
+      "whenToApply": [
+        "Bottom tab bar 想用「填色選中」而非單純換 icon 色",
+        "需要清晰、現代、有質感嘅 active 狀態（rounded-square / soft pill）",
+        "Personal OS／BoBo 產品要對齊 reel 第四款，或綠色品牌變體"
+      ],
+      "mechanism": [
+        "Tap tab → ripple 由 icon 中心 scale(0)→scale(1) 擴散",
+        "Ripple 填滿 rounded-square / soft pill（overflow:hidden 喺 ico-wrap）",
+        "舊 active 嘅 fill 原地 FADES OUT（opacity→0），唔滑走、唔反向收縮",
+        "Active icon → 白／淺色；inactive 維持 outline gray"
+      ],
+      "visualSpec": {
+        "hitTarget": "每 tab 含 ico-wrap（建議 ~44×44、border-radius ~14px）+ label",
+        "ripple": "絕對定位圓形層，由中心擴展至覆蓋 pill；gradient fill",
+        "oldActive": "is-leaving：transform 維持 scale(1)，只做 opacity fade（~320ms）",
+        "newActive": "is-entering：scale 0→1（~380ms cubic-bezier(.2,.8,.2,1)）+ opacity 快入",
+        "icons": "active/entering → #fff；idle → gray outline",
+        "timing": "來自 demo 實作：enter transform .38s；leave opacity .32s（可再調）"
+      },
+      "steps": [
+        "舊 btn：移除 is-active → 加 is-leaving；~340ms 後改 is-idle",
+        "新 btn：清 class → reflow（void offsetWidth）→ is-entering → rAF 加 is-active",
+        "確保每次由 scale(0) 重新播放（唔好跳過 reflow）",
+        "更新 screen／route 標籤"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：填色選中、現代 bottom nav",
+        "mechanism": "機制：中心 ripple 擴展；舊 tab 淡出唔滑移",
+        "visualSpec": "視覺規格：圓角方 pill + gradient fill + 白 icon",
+        "cssNotes": "CSS／狀態機：is-idle / is-entering / is-active / is-leaving",
+        "variants": "變體 A reel 紫→青；變體 B BoBo 綠 + 6 tab",
+        "dontDo": "唔好做：舊 fill 反向縮小、滑動轉移、忽略 reflow"
+      },
+      "cssNotes": [
+        ".ico-wrap { overflow:hidden; border-radius:14px; width/height:44px }",
+        ".ripple-fill { position:absolute; left/top 50%; size ≥ diagonal; border-radius:50%; transform:scale(0); opacity:0 }",
+        "is-entering/is-active: scale(1) + opacity 1；transition transform .38s cubic-bezier(.2,.8,.2,1)",
+        "is-leaving: 保持 scale(1)，opacity 0（.32s）——關鍵：唔好 reverse shrink",
+        "Force reflow before re-adding entering class so animation always replays",
+        "prefers-reduced-motion: 直接切 is-active，跳過 scale"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel violet → cyan",
+          "description": "暗色 bar（#16161c）；gradient #8B5CF6 → #22D3EE；active icon 白、label 淺色。貼近 demos reel。"
+        },
+        {
+          "id": "B",
+          "name": "Personal OS green",
+          "description": "白底 nav；gradient #89E219 → #58CC02（可加 #46A302）；6 tabs：今日／目標／課程／日曆／收件／更多；Uicons fi-rr-sunrise, bullseye, book-open-cover, calendar, inbox, menu-dots；active icon 白、label 綠。"
+        }
+      ],
+      "dontDo": [
+        "唔好令舊 ripple reverse shrink（會同「淡出」語義衝突）",
+        "唔好把 fill 做成整條 bar 滑動色塊（呢個 skill 係 per-tab center fill）",
+        "唔好漏咗 reflow——快速連點會播唔到動畫",
+        "唔好改 Personal OS 正式 index 前未選定 A/B"
+      ],
+      "demo": "demos/tab-bar-ripple-fill.html",
+      "source": "Personal OS demos/bottom-nav-ripple-fill.html + reel DfNU5TXkdDw（Tab Bar · Part 2 #4）。現行 app bottom-nav 仍係 active color swap；呢個係目標 skill library。"
+    },
+    {
+      "id": "tab-bar-jelly-icon",
+      "title": "Jelly Icon",
+      "description": "The tapped icon squashes, jumps and wobbles like jelly as it fills.",
+      "summary": "被點 icon 挤压、彈跳、果凍搖擺，同時填色。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "jelly", "squash", "icon"],
+      "whenToApply": [
+        "想突出 icon 本身嘅觸感（遊戲化、年輕向）",
+        "Fill／色變化同變形一齊發生",
+        "Tab 數唔太多，每個 icon 夠大（≥24px）"
+      ],
+      "visualSpec": {
+        "deform": "按下：scaleY 壓扁；起跳：向上 translate + scale 回彈；落地：輕微 wobble（rotate / skew）",
+        "fill": "可選同時做色填充或 stroke→fill",
+        "timing": "suggested: press 80ms → jump 220ms → wobble 280ms"
+      },
+      "steps": [
+        "pointerdown：squash",
+        "pointerup／confirm：jump + fill",
+        "settle wobble 兩至三個半週期",
+        "舊 icon 可淡出 fill 或回 outline"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：強調觸感同玩味",
+        "visualSpec": "視覺規格：squash → jump → jelly wobble + fill",
+        "cssNotes": "CSS：transform keyframes；transform-origin center bottom",
+        "variants": "變體：只變形 vs 變形+填色",
+        "dontDo": "唔好做：過度 skew、無 press 回饋"
+      },
+      "cssNotes": [
+        "transform-origin: center bottom 較自然",
+        "分開 press 同 settle 兩段 animation，避免打断感",
+        "fill 可用 background-clip 或 SVG path fill transition",
+        "reduced-motion：只改色，唔變形"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Full jelly + fill",
+          "description": "明顯 squash/jump/wobble + 填色（reel）。"
+        },
+        {
+          "id": "B",
+          "name": "Color-only jelly",
+          "description": "輕微 scale pulse + 變色；更克制。"
+        }
+      ],
+      "dontDo": [
+        "唔好 deform 到 icon 難辨認",
+        "唔好同系統長按手勢衝突（注意 delay）",
+        "唔好每個狀態都無限 loop wobble"
+      ],
+      "demo": "demos/tab-bar-jelly-icon.html",
+      "source": "Personal OS demos reel (Tab Bar · Part 2) · suggested defaults"
+    },
+    {
+      "id": "tab-bar-badge-pop",
+      "title": "Badge Pop",
+      "description": "Opening a tab pops its badge into dots. It pops back after you leave.",
+      "summary": "打開 tab 時 badge 爆成點；離開後再彈返嚟。",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": ["tab-bar", "badge", "notification", "pop"],
+      "whenToApply": [
+        "Tab 有未讀／通知 badge（數字或紅點）",
+        "進入該 tab 視為「已讀／清空」或暫時隱藏 badge",
+        "想用愉悅微動畫強化清理通知嘅感覺"
+      ],
+      "visualSpec": {
+        "badge": "右上角小紅點或數字 pill",
+        "open": "進入 tab：badge scale up 再碎成 3–6 粒小點向外散開並淡出",
+        "leave": "離開該 tab 後（若仍有未讀）badge 由 scale(0) pop 返嚟",
+        "timing": "suggested pop-apart ~280ms；reappear ~220ms spring"
+      },
+      "steps": [
+        "進入帶 badge 嘅 tab → 播 burst particles",
+        "標記本地已讀或等後端同步",
+        "若離開時仍有新通知 → badge pop-in",
+        "無通知則保持清空"
+      ],
+      "sections": {
+        "whenToApply": "幾時用：通知 badge 清除／再現",
+        "visualSpec": "視覺規格：爆點散開 + 離開再 pop",
+        "cssNotes": "CSS／JS：粒子用小 span 或 canvas；spring scale",
+        "variants": "變體：紅點 vs 數字；立即清 vs 延遲清",
+        "dontDo": "唔好做：未讀卻永久清掉、無障礙朗讀缺失"
+      },
+      "cssNotes": [
+        "Badge position absolute；particles 複製數個絕對定位圓點",
+        "Burst：各點不同 translate 方向 + opacity 0",
+        "Reappear：scale(0) → overshoot 1.15 → 1",
+        "aria-label 要更新未讀數；動畫唔係唯一資訊來源"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Dot burst",
+          "description": "紅點爆成多粒小點（reel）。"
+        },
+        {
+          "id": "B",
+          "name": "Number clear",
+          "description": "數字 badge scale-out；返回時若有新數再 pop。"
+        }
+      ],
+      "dontDo": [
+        "唔好只靠動畫表達未讀——要有文字／aria",
+        "唔好喺用家未真正睇內容就清伺服器未讀",
+        "唔好粒子過多影響低端機"
+      ],
+      "demo": "demos/tab-bar-badge-pop.html",
+      "source": "Personal OS demos reel (Tab Bar · Part 2) · suggested defaults"
+    }
+  ]
+}

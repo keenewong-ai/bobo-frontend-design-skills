@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BoBo Front-end Design Skills</title>
+  <meta name="description" content="Front-end design skills knowledge base — tab bar animations and more." />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body data-page="list">
+  <div class="wrap">
+    <header class="site">
+      <div>
+        <h1>BoBo Front-end Design Skills</h1>
+        <p class="sub">前端設計 skill 知識庫。每個 skill 都有 description；列表顯示 id、名稱、一句 summary、tags。穩定 id 用 kebab-case。</p>
+      </div>
+      <div class="badge-row">
+        <span class="chip">GitHub Pages</span>
+        <span class="chip">skills.json</span>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="搜 id / title / description / tags…" autocomplete="off" />
+      <div class="filters" id="filters" aria-label="分類篩選"></div>
+    </div>
+
+    <div id="skill-grid" class="grid" aria-live="polite"></div>
+    <p id="empty" class="empty" hidden>冇符合嘅 skill。</p>
+
+    <footer class="site">
+      Source note：Personal OS demos reel（Tab Bar · タブの切り替え · Part 2）。現行 Personal OS bottom-nav 仍係簡單 active color swap；呢度係目標 skill library。
+      · <a href="https://github.com/keenewong-ai/bobo-frontend-design-skills">Repo</a>
+    </footer>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>

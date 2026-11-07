@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Spotlight</title>
+<style>
+  :root { --bg:#131f24; --panel:#0f171b; --text:#E8EEF1; --muted:#8FA3AD; --border:#2c3c44; --accent:#8B5CF6; --cyan:#22D3EE; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { font-size:16px; margin:0 0 4px; font-weight:900; }
+  .lead { color:var(--muted); font-size:12px; margin:0 0 14px; line-height:1.5; }
+  .phone { max-width:340px; background:var(--panel); border:2px solid var(--border); border-radius:18px; overflow:hidden; }
+  .screen { height:110px; display:grid; place-items:center; color:var(--muted); font-size:13px; font-weight:800; border-bottom:1px dashed #2c3c44; }
+  .bar { display:grid; grid-template-columns:repeat(4,1fr); background:#16161c; padding:8px 6px 12px; position:relative; }
+  .tab { border:0; background:transparent; color:#7a7a8a; cursor:pointer; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px; -webkit-tap-highlight-color:transparent; position:relative; }
+  .tab .ico { font-size:20px; line-height:1; width:28px; height:28px; display:grid; place-items:center; }
+  .tab .lbl { font-size:10px; font-weight:800; }
+  .tab.is-active { color:#E8EEF1; }
+  
+  .spot { position:absolute; top:-8px; width:56px; height:56px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.28) 0%, transparent 70%);
+    filter:blur(1px); mix-blend-mode:screen; pointer-events:none;
+    transition: left .36s cubic-bezier(.2,.8,.2,1), transform .36s ease; left:0; transform:rotate(0deg); }
+  .spot.swing { animation: swing .4s ease; }
+  @keyframes swing { 0%{transform:rotate(-9deg)} 50%{transform:rotate(8deg)} 100%{transform:rotate(0)} }
+  .tab.is-active .ico { color:#fff; text-shadow:0 0 12px rgba(255,255,255,.55); }
+
+</style>
+</head>
+<body>
+  <h1>TAB · Spotlight</h1>
+  <p class="lead">點 tab 試動畫 · suggested demo（非 production 量度）</p>
+  
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar" style="overflow:hidden">
+    <div class="spot" id="spot"></div>
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Discover"><span class="ico">◎</span><span class="lbl">Discover</span></button>
+    <button class="tab" type="button" data-n="Live"><span class="ico">▶</span><span class="lbl">Live</span></button>
+    <button class="tab" type="button" data-n="Profile"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+
+<script>
+
+(function(){
+  const bar=document.getElementById('bar'), spot=document.getElementById('spot'), screen=document.getElementById('screen');
+  const tabs=[...bar.querySelectorAll('.tab')];
+  function go(t, animate){
+    const r=t.getBoundingClientRect(), br=bar.getBoundingClientRect();
+    spot.style.left=(r.left-br.left+(r.width-56)/2)+'px';
+    if(animate){ spot.classList.remove('swing'); void spot.offsetWidth; spot.classList.add('swing'); }
+    tabs.forEach(x=>x.classList.toggle('is-active', x===t));
+    screen.textContent=t.dataset.n;
+  }
+  go(tabs[0], false);
+  bar.addEventListener('click',e=>{ const t=e.target.closest('.tab'); if(!t) return; go(t,true); });
+})();
+
+</script>
+</body>
+</html>

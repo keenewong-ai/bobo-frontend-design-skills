@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Jelly Icon</title>
+<style>
+  :root { --bg:#131f24; --panel:#0f171b; --text:#E8EEF1; --muted:#8FA3AD; --border:#2c3c44; --accent:#8B5CF6; --cyan:#22D3EE; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { font-size:16px; margin:0 0 4px; font-weight:900; }
+  .lead { color:var(--muted); font-size:12px; margin:0 0 14px; line-height:1.5; }
+  .phone { max-width:340px; background:var(--panel); border:2px solid var(--border); border-radius:18px; overflow:hidden; }
+  .screen { height:110px; display:grid; place-items:center; color:var(--muted); font-size:13px; font-weight:800; border-bottom:1px dashed #2c3c44; }
+  .bar { display:grid; grid-template-columns:repeat(4,1fr); background:#16161c; padding:8px 6px 12px; position:relative; }
+  .tab { border:0; background:transparent; color:#7a7a8a; cursor:pointer; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px; -webkit-tap-highlight-color:transparent; position:relative; }
+  .tab .ico { font-size:20px; line-height:1; width:28px; height:28px; display:grid; place-items:center; }
+  .tab .lbl { font-size:10px; font-weight:800; }
+  .tab.is-active { color:#E8EEF1; }
+  
+  .tab .ico-wrap { width:36px; height:36px; display:grid; place-items:center; border-radius:12px; }
+  .tab.is-active .ico-wrap { background:linear-gradient(135deg,var(--accent),var(--cyan)); color:#fff; }
+  .tab.jelly .ico { animation: jelly .5s cubic-bezier(.2,.8,.2,1.4); }
+  @keyframes jelly {
+    0% { transform: scale(1,1) translateY(0) rotate(0); }
+    25% { transform: scale(1.25,.7) translateY(2px); }
+    50% { transform: scale(.85,1.2) translateY(-8px) rotate(-4deg); }
+    70% { transform: scale(1.1,.9) translateY(0) rotate(3deg); }
+    100% { transform: scale(1,1) rotate(0); }
+  }
+
+</style>
+</head>
+<body>
+  <h1>TAB · Jelly Icon</h1>
+  <p class="lead">點 tab 試動畫 · suggested demo（非 production 量度）</p>
+  
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico-wrap"><span class="ico">⌂</span></span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Explore"><span class="ico-wrap"><span class="ico">◈</span></span><span class="lbl">Explore</span></button>
+    <button class="tab" type="button" data-n="Create"><span class="ico-wrap"><span class="ico">＋</span></span><span class="lbl">Create</span></button>
+    <button class="tab" type="button" data-n="Inbox"><span class="ico-wrap"><span class="ico">✉</span></span><span class="lbl">Inbox</span></button>
+  </nav>
+</div>
+
+<script>
+
+(function(){
+  const bar=document.getElementById('bar'), screen=document.getElementById('screen');
+  bar.addEventListener('click',e=>{
+    const t=e.target.closest('.tab'); if(!t) return;
+    [...bar.querySelectorAll('.tab')].forEach(x=>{ x.classList.remove('is-active','jelly'); });
+    t.classList.add('is-active');
+    void t.offsetWidth; t.classList.add('jelly');
+    screen.textContent=t.dataset.n;
+  });
+})();
+
+</script>
+</body>
+</html>

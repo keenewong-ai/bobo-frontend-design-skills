@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Badge Pop</title>
+<style>
+  :root { --bg:#131f24; --panel:#0f171b; --text:#E8EEF1; --muted:#8FA3AD; --border:#2c3c44; --accent:#8B5CF6; --cyan:#22D3EE; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { font-size:16px; margin:0 0 4px; font-weight:900; }
+  .lead { color:var(--muted); font-size:12px; margin:0 0 14px; line-height:1.5; }
+  .phone { max-width:340px; background:var(--panel); border:2px solid var(--border); border-radius:18px; overflow:hidden; }
+  .screen { height:110px; display:grid; place-items:center; color:var(--muted); font-size:13px; font-weight:800; border-bottom:1px dashed #2c3c44; }
+  .bar { display:grid; grid-template-columns:repeat(4,1fr); background:#16161c; padding:8px 6px 12px; position:relative; }
+  .tab { border:0; background:transparent; color:#7a7a8a; cursor:pointer; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px; -webkit-tap-highlight-color:transparent; position:relative; }
+  .tab .ico { font-size:20px; line-height:1; width:28px; height:28px; display:grid; place-items:center; }
+  .tab .lbl { font-size:10px; font-weight:800; }
+  .tab.is-active { color:#E8EEF1; }
+  
+  .badge { position:absolute; top:2px; right:18%; min-width:14px; height:14px; padding:0 4px;
+    border-radius:999px; background:#ef4444; color:#fff; font-size:9px; font-weight:900;
+    display:grid; place-items:center; transform-origin:center; }
+  .badge.pop-out { animation: burst .28s forwards; }
+  @keyframes burst { to { transform:scale(1.6); opacity:0; } }
+  .badge.pop-in { animation: popin .28s cubic-bezier(.2,1.4,.3,1); }
+  @keyframes popin { from { transform:scale(0); } 70% { transform:scale(1.2);} to { transform:scale(1);} }
+  .particles { position:absolute; top:6px; right:18%; width:0; height:0; pointer-events:none; }
+  .particles i { position:absolute; width:5px; height:5px; border-radius:50%; background:#ef4444;
+    animation: fly .35s ease-out forwards; }
+  @keyframes fly { to { transform: translate(var(--x), var(--y)); opacity:0; } }
+
+</style>
+</head>
+<body>
+  <h1>TAB · Badge Pop</h1>
+  <p class="lead">點 tab 試動畫 · suggested demo（非 production 量度）</p>
+  
+<div class="phone">
+  <div class="screen" id="screen">Home · badge 會喺 Activity 爆開</div>
+  <nav class="bar" id="bar">
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Search"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-n="Activity" data-badge="3"><span class="ico">✧</span><span class="lbl">Activity</span><span class="badge" id="badge">3</span></button>
+    <button class="tab" type="button" data-n="Profile"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+
+<script>
+
+(function(){
+  const bar=document.getElementById('bar'), screen=document.getElementById('screen');
+  let cleared=false, onActivity=false;
+  function ensureBadge(){
+    const act=bar.querySelector('[data-badge]');
+    let b=act.querySelector('.badge');
+    if(!b){ b=document.createElement('span'); b.className='badge'; b.id='badge'; b.textContent='3'; act.appendChild(b); }
+    return b;
+  }
+  function burst(act){
+    const layer=document.createElement('span'); layer.className='particles';
+    const dirs=[[-14,-10],[0,-16],[14,-10],[-10,6],[12,8],[0,12]];
+    dirs.forEach(([x,y])=>{ const i=document.createElement('i'); i.style.setProperty('--x',x+'px'); i.style.setProperty('--y',y+'px'); layer.appendChild(i); });
+    act.appendChild(layer);
+    setTimeout(()=>layer.remove(), 400);
+  }
+  bar.addEventListener('click',e=>{
+    const t=e.target.closest('.tab'); if(!t) return;
+    [...bar.querySelectorAll('.tab')].forEach(x=>x.classList.remove('is-active'));
+    t.classList.add('is-active');
+    screen.textContent=t.dataset.n;
+    const was=onActivity; onActivity=t.dataset.n==='Activity';
+    if(onActivity && !cleared){
+      const b=ensureBadge(); b.classList.remove('pop-in'); b.classList.add('pop-out');
+      burst(t); cleared=true;
+      setTimeout(()=>{ if(b.parentNode) b.remove(); }, 260);
+    } else if(was && !onActivity && cleared){
+      // leave activity → badge pops back (demo: still "unread")
+      cleared=false;
+      const b=ensureBadge(); b.classList.remove('pop-out'); void b.offsetWidth; b.classList.add('pop-in');
+    }
+  });
+})();
+
+</script>
+</body>
+</html>

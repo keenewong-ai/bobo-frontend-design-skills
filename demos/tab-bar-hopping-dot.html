@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Hopping Dot</title>
+<style>
+  :root { --bg:#131f24; --panel:#0f171b; --text:#E8EEF1; --muted:#8FA3AD; --border:#2c3c44; --accent:#8B5CF6; --cyan:#22D3EE; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { font-size:16px; margin:0 0 4px; font-weight:900; }
+  .lead { color:var(--muted); font-size:12px; margin:0 0 14px; line-height:1.5; }
+  .phone { max-width:340px; background:var(--panel); border:2px solid var(--border); border-radius:18px; overflow:hidden; }
+  .screen { height:110px; display:grid; place-items:center; color:var(--muted); font-size:13px; font-weight:800; border-bottom:1px dashed #2c3c44; }
+  .bar { display:grid; grid-template-columns:repeat(4,1fr); background:#16161c; padding:8px 6px 12px; position:relative; }
+  .tab { border:0; background:transparent; color:#7a7a8a; cursor:pointer; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px; -webkit-tap-highlight-color:transparent; position:relative; }
+  .tab .ico { font-size:20px; line-height:1; width:28px; height:28px; display:grid; place-items:center; }
+  .tab .lbl { font-size:10px; font-weight:800; }
+  .tab.is-active { color:#E8EEF1; }
+  
+  .dot { position:absolute; top:4px; width:10px; height:10px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 10px var(--cyan),0 0 18px rgba(34,211,238,.45);
+    left:0; transition: left .42s cubic-bezier(.2,.7,.2,1.2); pointer-events:none; z-index:2; }
+  .dot.squish { animation: squish .28s ease; }
+  @keyframes squish { 0%{transform:scale(1,1)} 40%{transform:scale(1.35,.65)} 100%{transform:scale(1,1)} }
+  .dot.hop { animation: hop .42s ease; }
+  @keyframes hop { 0%{transform:translateY(0)} 45%{transform:translateY(-14px)} 100%{transform:translateY(0)} }
+
+</style>
+</head>
+<body>
+  <h1>TAB · Hopping Dot</h1>
+  <p class="lead">點 tab 試動畫 · suggested demo（非 production 量度）</p>
+  
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <div class="dot" id="dot"></div>
+    <button class="tab is-active" type="button" data-i="0" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-i="1" data-n="Search"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-i="2" data-n="Likes"><span class="ico">♥</span><span class="lbl">Likes</span></button>
+    <button class="tab" type="button" data-i="3" data-n="Me"><span class="ico">☺</span><span class="lbl">Me</span></button>
+  </nav>
+</div>
+
+<script>
+
+(function(){
+  const bar=document.getElementById('bar'), dot=document.getElementById('dot'), screen=document.getElementById('screen');
+  const tabs=[...bar.querySelectorAll('.tab')];
+  function place(i, animate){
+    const t=tabs[i], r=t.getBoundingClientRect(), br=bar.getBoundingClientRect();
+    const left=r.left-br.left+(r.width-10)/2;
+    if(animate){ dot.classList.remove('hop','squish'); void dot.offsetWidth; dot.classList.add('hop'); }
+    dot.style.left=left+'px';
+    if(animate){ setTimeout(()=>{ dot.classList.add('squish'); }, 380); }
+    tabs.forEach(x=>x.classList.toggle('is-active', x===t));
+    screen.textContent=t.dataset.n;
+  }
+  place(0,false);
+  bar.addEventListener('click',e=>{ const t=e.target.closest('.tab'); if(!t) return; place(+t.dataset.i,true); });
+})();
+
+</script>
+</body>
+</html>
