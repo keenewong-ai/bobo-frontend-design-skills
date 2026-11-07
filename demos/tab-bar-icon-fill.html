@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Icon Fill</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:110px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800;border-bottom:1px dashed #2c3c44}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);background:#16161c;padding:10px 6px 14px}
+.tab{border:0;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;
+display:flex;flex-direction:column;align-items:center;gap:6px;min-height:56px;-webkit-tap-highlight-color:transparent}
+.tab .ico{font-size:22px;line-height:1;transition:transform .28s cubic-bezier(.2,.8,.2,1.4),color .28s,filter .28s}
+.tab .dot{width:14px;height:3px;border-radius:999px;background:transparent;transition:background .2s,box-shadow .2s,transform .2s;transform:scaleX(0)}
+.tab.is-active .ico{color:transparent;background:linear-gradient(135deg,var(--v),var(--c));-webkit-background-clip:text;background-clip:text;
+filter:drop-shadow(0 0 6px rgba(34,211,238,.55));transform:scale(1.08);animation:pop .32s ease}
+.tab.is-active .dot{background:var(--c);box-shadow:0 0 8px var(--c);transform:scaleX(1)}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.12)}100%{transform:scale(1.08)}}
+.tab .lbl{font-size:10px;font-weight:800}
+</style>
+</head>
+<body>
+<h1>TAB · Icon Fill</h1>
+<p class="lead">點 tab · icon 由中心填色、pop、底點 · Part 1 #4</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico">⌂</span><span class="dot"></span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Search"><span class="ico">⌕</span><span class="dot"></span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-n="Likes"><span class="ico">♥</span><span class="dot"></span><span class="lbl">Likes</span></button>
+    <button class="tab" type="button" data-n="Profile"><span class="ico">☺</span><span class="dot"></span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),screen=document.getElementById('screen');
+  bar.addEventListener('click',e=>{
+    const t=e.target.closest('.tab');if(!t)return;
+    bar.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-active'));
+    void t.offsetWidth; t.classList.add('is-active');
+    screen.textContent=t.dataset.n;
+  });
+})();
+</script>
+</body></html>

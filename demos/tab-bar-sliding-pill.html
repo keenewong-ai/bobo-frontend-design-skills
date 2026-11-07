@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Sliding Pill</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:110px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800;border-bottom:1px dashed #2c3c44}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);background:#16161c;padding:10px 8px 14px;position:relative}
+.pill{position:absolute;top:10px;height:40px;width:56px;border-radius:999px;background:linear-gradient(90deg,var(--v),var(--c));
+box-shadow:0 0 16px rgba(34,211,238,.35);pointer-events:none;z-index:0;left:0;transform:translateX(0) scaleX(1);
+transition:transform .42s cubic-bezier(.2,.8,.2,1.15)}
+.tab{border:0;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;position:relative;z-index:1;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;-webkit-tap-highlight-color:transparent}
+.tab .ico{font-size:20px;line-height:1}.tab .lbl{font-size:10px;font-weight:800}
+.tab.is-active{color:#fff}
+</style>
+</head>
+<body>
+<h1>TAB · Sliding Pill</h1>
+<p class="lead">點 tab · pill 彈過去並拉伸 · Part 1 #1</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <div class="pill" id="pill"></div>
+    <button class="tab is-active" type="button" data-i="0" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-i="1" data-n="Search"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-i="2" data-n="Likes"><span class="ico">♥</span><span class="lbl">Likes</span></button>
+    <button class="tab" type="button" data-i="3" data-n="Profile"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),pill=document.getElementById('pill'),screen=document.getElementById('screen');
+  const tabs=[...bar.querySelectorAll('.tab')];
+  function place(i,stretch){
+    const t=tabs[i],r=t.getBoundingClientRect(),br=bar.getBoundingClientRect();
+    const w=56, left=r.left-br.left+(r.width-w)/2;
+    if(stretch){pill.style.transition='transform .42s cubic-bezier(.2,.8,.2,1.15)';
+      pill.style.transform=`translateX(${left}px) scaleX(1.45)`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{pill.style.transform=`translateX(${left}px) scaleX(1)`;}));
+    }else{pill.style.transition='none';pill.style.transform=`translateX(${left}px) scaleX(1)`;}
+    tabs.forEach(x=>x.classList.toggle('is-active',x===t));
+    screen.textContent=t.dataset.n;
+  }
+  place(0,false);
+  bar.addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;place(+t.dataset.i,true);});
+  addEventListener('resize',()=>place(tabs.findIndex(t=>t.classList.contains('is-active')),false));
+})();
+</script>
+</body></html>

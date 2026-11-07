@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Floating Notch</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:90px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800}
+.stage{position:relative;background:#16161c;padding:28px 6px 10px;margin-top:8px}
+.notch-svg{position:absolute;left:0;right:0;top:0;height:36px;pointer-events:none}
+.ball{position:absolute;top:4px;width:44px;height:44px;border-radius:50%;
+background:linear-gradient(135deg,var(--v),var(--c));box-shadow:0 4px 16px rgba(139,92,246,.45);
+display:grid;place-items:center;color:#fff;font-size:18px;z-index:2;left:0;
+transition:transform .48s cubic-bezier(.2,.7,.2,1.25);pointer-events:none}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:1;padding-top:8px}
+.tab{border:0;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;
+display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;-webkit-tap-highlight-color:transparent}
+.tab .ico{font-size:18px;opacity:.35}.tab .lbl{font-size:10px;font-weight:800;opacity:0;transition:opacity .25s}
+.tab.is-active .lbl{opacity:1;color:#cfd8dc}.tab.is-active .ico{opacity:0}
+</style>
+</head>
+<body>
+<h1>TAB · Floating Notch</h1>
+<p class="lead">點 tab · 浮球 hop 去新 notch · Part 1 #3（近似）</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <div class="stage" id="stage">
+    <svg class="notch-svg" viewBox="0 0 340 36" preserveAspectRatio="none" id="nsvg">
+      <path id="npath" fill="#16161c" d="M0,36 V16 H0 Q0,16 40,16 Q85,16 85,28 Q85,36 120,36 Q155,36 155,28 Q155,16 200,16 H340 V36 Z"/>
+    </svg>
+    <div class="ball" id="ball">⌂</div>
+    <nav class="bar" id="bar">
+      <button class="tab is-active" type="button" data-i="0" data-n="Home" data-ico="⌂"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+      <button class="tab" type="button" data-i="1" data-n="Search" data-ico="⌕"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+      <button class="tab" type="button" data-i="2" data-n="Likes" data-ico="♥"><span class="ico">♥</span><span class="lbl">Likes</span></button>
+      <button class="tab" type="button" data-i="3" data-n="Profile" data-ico="☺"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+    </nav>
+  </div>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),ball=document.getElementById('ball'),stage=document.getElementById('stage'),screen=document.getElementById('screen');
+  const tabs=[...bar.querySelectorAll('.tab')];
+  function place(i,hop){
+    const t=tabs[i],r=t.getBoundingClientRect(),sr=stage.getBoundingClientRect();
+    const left=r.left-sr.left+(r.width-44)/2;
+    if(hop){ball.style.transition='transform .48s cubic-bezier(.2,.7,.2,1.25)';
+      ball.style.transform=`translateX(${left}px) translateY(-10px)`;
+      setTimeout(()=>{ball.style.transform=`translateX(${left}px) translateY(0)`;},220);
+    }else{ball.style.transition='none';ball.style.transform=`translateX(${left}px)`;}
+    ball.textContent=t.dataset.ico;
+    tabs.forEach(x=>x.classList.toggle('is-active',x===t));
+    screen.textContent=t.dataset.n;
+  }
+  place(0,false);
+  bar.addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;place(+t.dataset.i,true);});
+})();
+</script>
+</body></html>

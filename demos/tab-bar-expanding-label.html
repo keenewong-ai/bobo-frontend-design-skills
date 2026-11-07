@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Expanding Label</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:110px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800;border-bottom:1px dashed #2c3c44}
+.bar{display:flex;gap:6px;background:#16161c;padding:10px 10px 14px;align-items:center}
+.tab{border:1px solid transparent;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;
+display:flex;align-items:center;justify-content:center;gap:0;min-height:44px;min-width:44px;padding:0 10px;
+border-radius:999px;flex:0 1 auto;transition:flex .36s ease,padding .36s ease,border-color .3s,background .3s,color .3s;
+-webkit-tap-highlight-color:transparent}
+.tab .ico{font-size:18px;line-height:1;flex-shrink:0}
+.tab .lbl{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;font-size:12px;font-weight:800;
+transform:translateX(-6px);transition:max-width .36s ease,opacity .28s ease .05s,transform .36s ease,margin .36s}
+.tab.is-active{flex:1.4 1 auto;color:#E8EEF1;border-color:rgba(139,92,246,.85);
+background:linear-gradient(90deg,rgba(139,92,246,.18),rgba(34,211,238,.12));padding:0 14px}
+.tab.is-active .lbl{max-width:72px;opacity:1;transform:translateX(0);margin-left:8px}
+</style>
+</head>
+<body>
+<h1>TAB · Expanding Label</h1>
+<p class="lead">點 tab · active 展開 pill、label 滑出 · Part 1 #5</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Search"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-n="Likes"><span class="ico">♥</span><span class="lbl">Likes</span></button>
+    <button class="tab" type="button" data-n="Profile"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),screen=document.getElementById('screen');
+  bar.addEventListener('click',e=>{
+    const t=e.target.closest('.tab');if(!t)return;
+    bar.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-active'));
+    t.classList.add('is-active'); screen.textContent=t.dataset.n;
+  });
+})();
+</script>
+</body></html>

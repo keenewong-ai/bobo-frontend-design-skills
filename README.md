@@ -51,6 +51,21 @@ Source：Personal OS demos reel（Tab Bar · タブの切り替え · Part 2）�
 
 Demo：[`demos/tab-bar-ripple-fill.html`](./demos/tab-bar-ripple-fill.html)
 
+
+
+## Seed skills（Tab Bar · Part 1）
+
+來源：[Instagram reel DfLt74CjduQ](https://www.instagram.com/reel/DfLt74CjduQ/) · ui_motion_prompts · タブの切り替えの演出 その1。
+
+1. `tab-bar-sliding-pill` — Sliding Pill  
+2. `tab-bar-liquid-bulge` — Liquid Bulge  
+3. `tab-bar-floating-notch` — Floating Notch  
+4. `tab-bar-icon-fill` — Icon Fill  
+5. `tab-bar-expanding-label` — Expanding Label  
+6. `tab-bar-bubble-float` — Bubble Float  
+
+本地參考：`refs/reel-DfLt74CjduQ/`（frames + reel.mp4）。
+
 ## Local preview
 
 ```bash

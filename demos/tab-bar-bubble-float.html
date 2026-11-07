@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Bubble Float</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:110px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800;border-bottom:1px dashed #2c3c44}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);background:#16161c;padding:10px 6px 14px;overflow:visible}
+.tab{border:0;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;position:relative;
+display:flex;flex-direction:column;align-items:center;gap:6px;min-height:56px;-webkit-tap-highlight-color:transparent;overflow:visible}
+.tab .ico{font-size:22px;line-height:1;transition:transform .28s ease,filter .28s,color .28s}
+.tab .dot{width:6px;height:6px;border-radius:50%;background:transparent;transition:.2s}
+.tab .lbl{font-size:10px;font-weight:800}
+.tab.is-active{color:#E8EEF1}
+.tab.is-active .ico{transform:translateY(-6px);color:var(--c);filter:drop-shadow(0 0 8px rgba(34,211,238,.7))}
+.tab.is-active .dot{background:var(--c);box-shadow:0 0 8px var(--c)}
+.bubble{position:absolute;border:1.5px solid var(--c);border-radius:50%;pointer-events:none;opacity:.9;
+animation:floatPop .65s ease forwards;left:50%;bottom:38px;margin-left:-6px}
+@keyframes floatPop{0%{transform:translate(0,0) scale(.6);opacity:.9}100%{transform:translate(var(--dx),-40px) scale(1.15);opacity:0}}
+</style>
+</head>
+<body>
+<h1>TAB · Bubble Float</h1>
+<p class="lead">點 tab · icon 上浮發光、氣泡上飄 · Part 1 #6</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <nav class="bar" id="bar">
+    <button class="tab is-active" type="button" data-n="Home"><span class="ico">⌂</span><span class="dot"></span><span class="lbl">Home</span></button>
+    <button class="tab" type="button" data-n="Search"><span class="ico">⌕</span><span class="dot"></span><span class="lbl">Search</span></button>
+    <button class="tab" type="button" data-n="Likes"><span class="ico">♥</span><span class="dot"></span><span class="lbl">Likes</span></button>
+    <button class="tab" type="button" data-n="Profile"><span class="ico">☺</span><span class="dot"></span><span class="lbl">Profile</span></button>
+  </nav>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),screen=document.getElementById('screen');
+  function spawn(tab){
+    for(let i=0;i<4;i++){
+      const b=document.createElement('span');
+      b.className='bubble';
+      const size=6+Math.random()*8;
+      b.style.width=size+'px';b.style.height=size+'px';
+      b.style.setProperty('--dx',((Math.random()-.5)*28)+'px');
+      b.style.animationDelay=(i*40)+'ms';
+      tab.appendChild(b);
+      b.addEventListener('animationend',()=>b.remove());
+    }
+  }
+  bar.addEventListener('click',e=>{
+    const t=e.target.closest('.tab');if(!t)return;
+    bar.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-active'));
+    t.classList.add('is-active'); spawn(t); screen.textContent=t.dataset.n;
+  });
+})();
+</script>
+</body></html>

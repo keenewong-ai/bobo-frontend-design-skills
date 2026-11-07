@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updated": "2026-11-07",
-  "source": "Personal OS demos reel (Tab Bar · タブの切り替え · Part 2)",
+  "source": "Tab Bar reels Part 1 (DfLt74CjduQ) + Part 2 (Personal OS demos)",
   "schema": {
     "required": [
       "id",
@@ -1048,6 +1048,1154 @@
           "purpose": "唔好做：未讀卻永久清掉、無障礙朗讀缺失",
           "does": "唔好做：未讀卻永久清掉、無障礙朗讀缺失"
         }
+      ]
+    },
+    {
+      "id": "tab-bar-sliding-pill",
+      "title": "Sliding Pill",
+      "description": "Sliding Pill 係 Tab Bar Part 1 第一種切換動效：一粒 violet→cyan 漸變圓角 pill 由舊 tab 彈去新 tab，滑動途中會水平拉伸（squash & stretch），到達後再彈回正常闊度。感覺彈簧、流暢，適合 4–5 個 icon tab、深色 bar。實作上 pill 通常係獨立 absolute layer，量度目標 tab 中心／闊度後用 transform translateX + scaleX；舊 icon 變回線稿灰、新 icon 變白。需處理 reduced-motion（改為瞬間跳位或短 fade）。",
+      "summary": "A violet→cyan pill springs to the tapped tab, stretching as it slides.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "pill",
+        "spring",
+        "slide"
+      ],
+      "whenToApply": [
+        "底部 icon tab（建議 3–5 個），想用一粒移動色塊表達選中",
+        "品牌語氣偏流暢／彈簧，唔想用硬切背景色",
+        "深色 bar + 高對比 accent（reel 紫→青）效果最明顯"
+      ],
+      "visualSpec": {
+        "bar": "深色圓角 bar；4 icon（Home／Search／Heart／Profile）；inactive 線稿灰",
+        "pill": "violet→cyan 水平漸變膠囊，高度貼近 icon 區（~36–44px），圓角 ~999px 或 soft pill",
+        "motion": "pill 滑向目標 tab；途中 scaleX 拉長再縮短（spring）；active icon 變白",
+        "timing": "suggested defaults：slide ~380–480ms cubic-bezier(.2,.8,.2,1.15)；stretch peak ~midpoint"
+      },
+      "steps": [
+        "建 tab bar：4 個 button + 一層獨立 .pill（position:absolute; pointer-events:none）",
+        "讀取 active／目標 tab 的 left+width（getBoundingClientRect 相對 bar）",
+        "更新 pill 的 translateX 與 width（或 scaleX），用 spring easing",
+        "中段加 scaleX 拉伸 keyframe／WAAPI；結束後清 will-change",
+        "切換 icon／label 顏色；尊重 prefers-reduced-motion"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：彈簧滑動 pill 指示選中",
+          "content": [
+            "底部 icon tab（建議 3–5 個），想用一粒移動色塊表達選中",
+            "品牌語氣偏流暢／彈簧，唔想用硬切背景色",
+            "深色 bar + 高對比 accent（reel 紫→青）效果最明顯"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：彈簧滑動 pill + squash/stretch",
+          "content": {
+            "bar": "深色圓角 bar；4 icon（Home／Search／Heart／Profile）；inactive 線稿灰",
+            "pill": "violet→cyan 水平漸變膠囊，高度貼近 icon 區（~36–44px），圓角 ~999px 或 soft pill",
+            "motion": "pill 滑向目標 tab；途中 scaleX 拉長再縮短（spring）；active icon 變白",
+            "timing": "suggested defaults：slide ~380–480ms cubic-bezier(.2,.8,.2,1.15)；stretch peak ~midpoint"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "撳 tab → 量度 from/to 中心，pill translateX 過去",
+            "滑動中段 scaleX > 1（拉伸），落地 scaleX → 1（彈回）",
+            "舊 active 只改 icon／label 色，唔跟住移動第二粒 pill"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "建 tab bar：4 個 button + 一層獨立 .pill（position:absolute; pointer-events:none）",
+            "讀取 active／目標 tab 的 left+width（getBoundingClientRect 相對 bar）",
+            "更新 pill 的 translateX 與 width（或 scaleX），用 spring easing",
+            "中段加 scaleX 拉伸 keyframe／WAAPI；結束後清 will-change",
+            "切換 icon／label 顏色；尊重 prefers-reduced-motion"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／互動：translateX+scaleX；gradient pill",
+          "content": [
+            "Pill 用 transform: translateX(...) scaleX(...) 優先於 left/width，減 layout thrash",
+            "background: linear-gradient(90deg, #8B5CF6, #22D3EE); border-radius: 999px; box-shadow 可加 soft glow",
+            "Suggested spring：cubic-bezier(.2,.8,.2,1.15) 或 WAAPI spring",
+            "prefers-reduced-motion：取消 stretch，瞬移或 150ms fade"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel 漸變 vs 品牌單色弱拉伸",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel violet→cyan",
+              "description": "紫→青漸變 pill、暗色 bar、4 icon（貼近 Instagram reel Part 1 #1）。"
+            },
+            {
+              "id": "B",
+              "name": "Brand solid / soft stretch",
+              "description": "單色品牌 accent；縮短拉伸幅度，適合偏生產力 UI。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：瞬移、多重 pill、超遠距誇張拉伸",
+          "content": [
+            "唔好瞬移 pill（會似 bug）",
+            "唔好同時有多粒 pill 重疊殘影",
+            "Tab 過多（≥6）且跨距極遠時拉伸會誇張——改用 underline 或 fade"
+          ]
+        }
+      ],
+      "cssNotes": [
+        "Pill 用 transform: translateX(...) scaleX(...) 優先於 left/width，減 layout thrash",
+        "background: linear-gradient(90deg, #8B5CF6, #22D3EE); border-radius: 999px; box-shadow 可加 soft glow",
+        "Suggested spring：cubic-bezier(.2,.8,.2,1.15) 或 WAAPI spring",
+        "prefers-reduced-motion：取消 stretch，瞬移或 150ms fade"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel violet→cyan",
+          "description": "紫→青漸變 pill、暗色 bar、4 icon（貼近 Instagram reel Part 1 #1）。"
+        },
+        {
+          "id": "B",
+          "name": "Brand solid / soft stretch",
+          "description": "單色品牌 accent；縮短拉伸幅度，適合偏生產力 UI。"
+        }
+      ],
+      "dontDo": [
+        "唔好瞬移 pill（會似 bug）",
+        "唔好同時有多粒 pill 重疊殘影",
+        "Tab 過多（≥6）且跨距極遠時拉伸會誇張——改用 underline 或 fade"
+      ],
+      "demo": "demos/tab-bar-sliding-pill.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：彈簧滑動 pill 指示選中",
+          "does": "幾時用：彈簧滑動 pill 指示選中"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：彈簧滑動 pill + squash/stretch",
+          "does": "視覺規格：彈簧滑動 pill + squash/stretch"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／互動：translateX+scaleX；gradient pill",
+          "does": "CSS／互動：translateX+scaleX；gradient pill"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel 漸變 vs 品牌單色弱拉伸",
+          "does": "變體：reel 漸變 vs 品牌單色弱拉伸"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：瞬移、多重 pill、超遠距誇張拉伸",
+          "does": "唔好做：瞬移、多重 pill、超遠距誇張拉伸"
+        }
+      ],
+      "mechanism": [
+        "撳 tab → 量度 from/to 中心，pill translateX 過去",
+        "滑動中段 scaleX > 1（拉伸），落地 scaleX → 1（彈回）",
+        "舊 active 只改 icon／label 色，唔跟住移動第二粒 pill"
+      ]
+    },
+    {
+      "id": "tab-bar-liquid-bulge",
+      "title": "Liquid Bulge",
+      "description": "Liquid Bulge 令整條 tab bar 像液體：active tab 下方／上方出現一鼓 violet→cyan 鼓起（bulge），切換時鼓起如黏液般流去新 tab，而唔係硬切。適合想強調「物質感」、玩味消費類 app；實作可用 SVG path morph、CSS mask、或偽元素 + border-radius 近似鼓起。active icon 變白；流程應有黏滯感（viscous），總時長 suggested ~450–600ms。",
+      "summary": "The bar bulges like liquid under the active tab, and the bulge flows over.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "liquid",
+        "morph",
+        "bulge"
+      ],
+      "whenToApply": [
+        "想要明顯「液體／有機」選中回饋，多於精準生產力感",
+        "Tab 數量少（≤5），鼓起流動距離可控",
+        "深色 bar 上用高飽和漸變最易讀"
+      ],
+      "visualSpec": {
+        "bar": "深色底；active 區填 violet→cyan，頂緣向上鼓起成 hump",
+        "bulge": "平滑曲線鼓起，置於 active icon 後方／下方；icon 白色",
+        "motion": "鼓起如液體流向新 tab（morph），唔係整塊平移硬邊",
+        "timing": "suggested ~480–600ms ease-in-out；可帶輕微 overshoot"
+      },
+      "steps": [
+        "選實作路線：SVG path morph、CSS clip-path、或偽元素圓角近似",
+        "綁定鼓起中心到 active tab 中心 X",
+        "切換時動畫化中心 X（同 path 控制點）形成流動",
+        "同步 icon 顏色；低端機可降級為簡單 pill slide",
+        "加 prefers-reduced-motion：跳過 morph，只改色"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：液體／有機鼓起選中",
+          "content": [
+            "想要明顯「液體／有機」選中回饋，多於精準生產力感",
+            "Tab 數量少（≤5），鼓起流動距離可控",
+            "深色 bar 上用高飽和漸變最易讀"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：液體鼓起 + 流動 morph",
+          "content": {
+            "bar": "深色底；active 區填 violet→cyan，頂緣向上鼓起成 hump",
+            "bulge": "平滑曲線鼓起，置於 active icon 後方／下方；icon 白色",
+            "motion": "鼓起如液體流向新 tab（morph），唔係整塊平移硬邊",
+            "timing": "suggested ~480–600ms ease-in-out；可帶輕微 overshoot"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "Active 位置用 path／mask 定義鼓起中心",
+            "切換時插值鼓起中心 X（同可選控制點）形成「流動」",
+            "舊區漸變色退回 bar 底色，新區填入 accent"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "選實作路線：SVG path morph、CSS clip-path、或偽元素圓角近似",
+            "綁定鼓起中心到 active tab 中心 X",
+            "切換時動畫化中心 X（同 path 控制點）形成流動",
+            "同步 icon 顏色；低端機可降級為簡單 pill slide",
+            "加 prefers-reduced-motion：跳過 morph，只改色"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／SVG：path morph 或偽元素近似",
+          "content": [
+            "進階：SVG <path> + flubber／WAAPI 插值；或 CSS mask-image radial",
+            "近似版：::before 大圓角塊 + translateX，opacity 過渡模擬 bulge",
+            "gradient fill：linear-gradient(135deg,#8B5CF6,#22D3EE)",
+            "避免每幀 layout；用 transform／path 屬性"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：完整 liquid vs soft underglow",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel liquid hump",
+              "description": "頂緣明顯鼓起 + 全段漸變流過（Part 1 #2）。"
+            },
+            {
+              "id": "B",
+              "name": "Soft underglow",
+              "description": "無大 morph，只在 active 下做柔和 glow blob（較易實作）。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：layout thrash、擋點擊、過長 morph",
+          "content": [
+            "唔好每幀重算整頁 layout",
+            "唔好鼓起擋住可點擊區或安全區",
+            "唔好在 ≥6 tab 長距 morph 拖超 700ms"
+          ]
+        }
+      ],
+      "cssNotes": [
+        "進階：SVG <path> + flubber／WAAPI 插值；或 CSS mask-image radial",
+        "近似版：::before 大圓角塊 + translateX，opacity 過渡模擬 bulge",
+        "gradient fill：linear-gradient(135deg,#8B5CF6,#22D3EE)",
+        "避免每幀 layout；用 transform／path 屬性"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel liquid hump",
+          "description": "頂緣明顯鼓起 + 全段漸變流過（Part 1 #2）。"
+        },
+        {
+          "id": "B",
+          "name": "Soft underglow",
+          "description": "無大 morph，只在 active 下做柔和 glow blob（較易實作）。"
+        }
+      ],
+      "dontDo": [
+        "唔好每幀重算整頁 layout",
+        "唔好鼓起擋住可點擊區或安全區",
+        "唔好在 ≥6 tab 長距 morph 拖超 700ms"
+      ],
+      "demo": "demos/tab-bar-liquid-bulge.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：液體／有機鼓起選中",
+          "does": "幾時用：液體／有機鼓起選中"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：液體鼓起 + 流動 morph",
+          "does": "視覺規格：液體鼓起 + 流動 morph"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／SVG：path morph 或偽元素近似",
+          "does": "CSS／SVG：path morph 或偽元素近似"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：完整 liquid vs soft underglow",
+          "does": "變體：完整 liquid vs soft underglow"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：layout thrash、擋點擊、過長 morph",
+          "does": "唔好做：layout thrash、擋點擊、過長 morph"
+        }
+      ],
+      "mechanism": [
+        "Active 位置用 path／mask 定義鼓起中心",
+        "切換時插值鼓起中心 X（同可選控制點）形成「流動」",
+        "舊區漸變色退回 bar 底色，新區填入 accent"
+      ]
+    },
+    {
+      "id": "tab-bar-floating-notch",
+      "title": "Floating Notch",
+      "description": "Floating Notch：tab bar 頂緣喺 active 位置凹入一弧形 notch，一粒 floating ball（violet→cyan）載住 icon，騎住曲線跳去新 tab——途中有 hop。常配細 label 喺 notch 下方。適合想做「凸起主按鈕」感覺但唔永久抬高某一 tab；實作要同步球位移同 notch 路徑（SVG／clip-path／雙層曲線）。suggested hop ~420–560ms。",
+      "summary": "A floating ball rides a curved notch to the new tab, hopping on the way.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "notch",
+        "floating",
+        "hop"
+      ],
+      "whenToApply": [
+        "想要凸起／凹陷結合的 playful 導航（類似 curved bottom bar）",
+        "Tab ≤5；需要顯示短暫 label（如 Profile／Likes）",
+        "願意用 SVG 或較複雜 clip 換取特色動效"
+      ],
+      "visualSpec": {
+        "bar": "深色 bar；active 處頂緣 U 形凹入（notch）",
+        "ball": "圓形 floating ball，violet→cyan 填色，載住白色 icon，部分浮喺 bar 上方",
+        "label": "可選：notch 下方細字 label（Profile／Likes 等）",
+        "motion": "ball 沿曲線 hop 到新位置；notch 跟住移動／morph",
+        "timing": "suggested hop ~420–560ms；落地輕 squash 可選"
+      },
+      "steps": [
+        "用 SVG path 或 CSS 畫 bar 頂緣 notch（隨 active index 更新）",
+        "Floating ball absolute 置中於 notch；內放 icon",
+        "切換：ball translate 弧線 + notch path morph 到新 index",
+        "可選落地 squash；更新 label 文字",
+        "reduced-motion：球淡入新位，notch 瞬切"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：凹槽 + 浮球導航",
+          "content": [
+            "想要凸起／凹陷結合的 playful 導航（類似 curved bottom bar）",
+            "Tab ≤5；需要顯示短暫 label（如 Profile／Likes）",
+            "願意用 SVG 或較複雜 clip 換取特色動效"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：凹槽 notch + 跳動 floating ball",
+          "content": {
+            "bar": "深色 bar；active 處頂緣 U 形凹入（notch）",
+            "ball": "圓形 floating ball，violet→cyan 填色，載住白色 icon，部分浮喺 bar 上方",
+            "label": "可選：notch 下方細字 label（Profile／Likes 等）",
+            "motion": "ball 沿曲線 hop 到新位置；notch 跟住移動／morph",
+            "timing": "suggested hop ~420–560ms；落地輕 squash 可選"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "Notch 中心 = active tab 中心",
+            "切換時 ball 抬起 → 橫移（可帶弧）→ 落入新 notch",
+            "Notch path 同步插值，避免球同凹槽脫節"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "用 SVG path 或 CSS 畫 bar 頂緣 notch（隨 active index 更新）",
+            "Floating ball absolute 置中於 notch；內放 icon",
+            "切換：ball translate 弧線 + notch path morph 到新 index",
+            "可選落地 squash；更新 label 文字",
+            "reduced-motion：球淡入新位，notch 瞬切"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／SVG：path morph + ball hop transform",
+          "content": [
+            "SVG path d 插值或兩套 path crossfade；ball 用 transform",
+            "z-index：ball > bar fill；注意點擊熱區仍覆蓋整粒 ball",
+            "gradient on ball：radial 或 linear #8B5CF6→#22D3EE",
+            "safe-area：唔好令球超出螢幕頂／手勢區"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel hop vs 平滑滑移",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel hop notch",
+              "description": "明顯 U notch + 跳動球（Part 1 #3）。"
+            },
+            {
+              "id": "B",
+              "name": "Slide notch",
+              "description": "Notch 平滑滑移、球少 hop；較穩陣。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：穿模、丟無障礙、窄屏硬塞",
+          "content": [
+            "唔好球同 notch 不同步（會穿模）",
+            "唔好忽略 ball 的點擊／焦點環",
+            "唔好在橫向極窄螢幕硬塞大 notch"
+          ]
+        }
+      ],
+      "cssNotes": [
+        "SVG path d 插值或兩套 path crossfade；ball 用 transform",
+        "z-index：ball > bar fill；注意點擊熱區仍覆蓋整粒 ball",
+        "gradient on ball：radial 或 linear #8B5CF6→#22D3EE",
+        "safe-area：唔好令球超出螢幕頂／手勢區"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel hop notch",
+          "description": "明顯 U notch + 跳動球（Part 1 #3）。"
+        },
+        {
+          "id": "B",
+          "name": "Slide notch",
+          "description": "Notch 平滑滑移、球少 hop；較穩陣。"
+        }
+      ],
+      "dontDo": [
+        "唔好球同 notch 不同步（會穿模）",
+        "唔好忽略 ball 的點擊／焦點環",
+        "唔好在橫向極窄螢幕硬塞大 notch"
+      ],
+      "demo": "demos/tab-bar-floating-notch.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：凹槽 + 浮球導航",
+          "does": "幾時用：凹槽 + 浮球導航"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：凹槽 notch + 跳動 floating ball",
+          "does": "視覺規格：凹槽 notch + 跳動 floating ball"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／SVG：path morph + ball hop transform",
+          "does": "CSS／SVG：path morph + ball hop transform"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel hop vs 平滑滑移",
+          "does": "變體：reel hop vs 平滑滑移"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：穿模、丟無障礙、窄屏硬塞",
+          "does": "唔好做：穿模、丟無障礙、窄屏硬塞"
+        }
+      ],
+      "mechanism": [
+        "Notch 中心 = active tab 中心",
+        "切換時 ball 抬起 → 橫移（可帶弧）→ 落入新 notch",
+        "Notch path 同步插值，避免球同凹槽脫節"
+      ]
+    },
+    {
+      "id": "tab-bar-icon-fill",
+      "title": "Icon Fill",
+      "description": "Icon Fill 唔移動大色塊：撳中的 icon 由中心填入 violet→cyan，伴隨輕微 pop（scale），並在下方出現一粒小指示點／短 dash。舊 icon 褪回線稿灰、點消失。適合想保持 bar 極簡、只靠 icon 本身表達狀態；實作可用 SVG currentColor／mask fill、或雙層 icon（outline + filled）做 clip 展開。",
+      "summary": "The tapped icon fills violet→cyan from its center, pops, and gains a dot.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "icon",
+        "fill",
+        "pop"
+      ],
+      "whenToApply": [
+        "想保持 bar 乾淨，唔加移動 pill／鼓起",
+        "Icon 有清晰 filled／outline 兩態（或可用 mask）",
+        "需要細指示點加強「而家喺邊」"
+      ],
+      "visualSpec": {
+        "bar": "平坦深色 bar；無大背景 pill",
+        "icon": "active icon 由中心填 violet→cyan；pop scale ~1.08→1",
+        "dot": "icon 下方小橫點／短 dash，帶 cyan glow",
+        "timing": "suggested fill+pop ~280–360ms；dot fade-in ~200ms"
+      },
+      "steps": [
+        "準備 outline／filled 兩層或 SVG mask",
+        "Active：clip-path 或 scale mask 由中心展開填色",
+        "加 scale pop keyframes；底下加 .dot 元素",
+        "舊 tab 反向褪色；一次只保留一個 filled + dot",
+        "reduced-motion：即時切 filled，無 pop"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：極簡 icon 填色選中",
+          "content": [
+            "想保持 bar 乾淨，唔加移動 pill／鼓起",
+            "Icon 有清晰 filled／outline 兩態（或可用 mask）",
+            "需要細指示點加強「而家喺邊」"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：中心填色 + pop + 底點",
+          "content": {
+            "bar": "平坦深色 bar；無大背景 pill",
+            "icon": "active icon 由中心填 violet→cyan；pop scale ~1.08→1",
+            "dot": "icon 下方小橫點／短 dash，帶 cyan glow",
+            "timing": "suggested fill+pop ~280–360ms；dot fade-in ~200ms"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "Tap → 新 icon fill 由中心擴展 + scale pop",
+            "同時在下方 fade／scale 入指示點",
+            "舊 icon fill 褪出、舊點淡出"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "準備 outline／filled 兩層或 SVG mask",
+            "Active：clip-path 或 scale mask 由中心展開填色",
+            "加 scale pop keyframes；底下加 .dot 元素",
+            "舊 tab 反向褪色；一次只保留一個 filled + dot",
+            "reduced-motion：即時切 filled，無 pop"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS：clip-path fill、dot glow",
+          "content": [
+            "雙層 icon：filled 用 clip-path: circle(0% at 50% 50%) → circle(100%)",
+            "或 background-clip + mask-image；color／gradient 用 #8B5CF6→#22D3EE",
+            "Dot：width 12–16px; height 3–4px; border-radius:999px; box-shadow glow",
+            "避免整顆 icon 用 filter 過重導致糊邊"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel fill+dash vs 純變色",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel fill + dash",
+              "description": "中心填色 + 下方短 dash glow（Part 1 #4）。"
+            },
+            {
+              "id": "B",
+              "name": "Solid tint only",
+              "description": "只改 currentColor／opacity，無 dash（更克制）。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：無第二提示、過大 pop、殘留多個 filled",
+          "content": [
+            "唔好只有色差而無形狀／點——色弱用家難辨",
+            "唔好 pop 過大（>1.2）令 layout 抖",
+            "唔好同時填晒所有去過嘅 tab"
+          ]
+        }
+      ],
+      "cssNotes": [
+        "雙層 icon：filled 用 clip-path: circle(0% at 50% 50%) → circle(100%)",
+        "或 background-clip + mask-image；color／gradient 用 #8B5CF6→#22D3EE",
+        "Dot：width 12–16px; height 3–4px; border-radius:999px; box-shadow glow",
+        "避免整顆 icon 用 filter 過重導致糊邊"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel fill + dash",
+          "description": "中心填色 + 下方短 dash glow（Part 1 #4）。"
+        },
+        {
+          "id": "B",
+          "name": "Solid tint only",
+          "description": "只改 currentColor／opacity，無 dash（更克制）。"
+        }
+      ],
+      "dontDo": [
+        "唔好只有色差而無形狀／點——色弱用家難辨",
+        "唔好 pop 過大（>1.2）令 layout 抖",
+        "唔好同時填晒所有去過嘅 tab"
+      ],
+      "demo": "demos/tab-bar-icon-fill.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：極簡 icon 填色選中",
+          "does": "幾時用：極簡 icon 填色選中"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：中心填色 + pop + 底點",
+          "does": "視覺規格：中心填色 + pop + 底點"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS：clip-path fill、dot glow",
+          "does": "CSS：clip-path fill、dot glow"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：reel fill+dash vs 純變色",
+          "does": "變體：reel fill+dash vs 純變色"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：無第二提示、過大 pop、殘留多個 filled",
+          "does": "唔好做：無第二提示、過大 pop、殘留多個 filled"
+        }
+      ],
+      "mechanism": [
+        "Tap → 新 icon fill 由中心擴展 + scale pop",
+        "同時在下方 fade／scale 入指示點",
+        "舊 icon fill 褪出、舊點淡出"
+      ]
+    },
+    {
+      "id": "tab-bar-expanding-label",
+      "title": "Expanding Label",
+      "description": "Expanding Label：只有 active tab 展開成 pill，顯示 icon + 文字 label（由側滑出）；其他 tab 收成純 icon 並略縮。經典「選中展開」模式，節省横向空間又保留可讀性。實作多用 flex-grow／grid 動畫寬度，label overflow:hidden + translateX；accent 可用描邊或淡底 + violet→cyan。suggested ~320–420ms。",
+      "summary": "The active tab grows into a pill and its label slides out. Others shrink.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "label",
+        "expand",
+        "flex"
+      ],
+      "whenToApply": [
+        "Icon + 文字都需要，但横向不夠同時顯示全部 label",
+        "Tab 3–5 個；希望選中項自解釋",
+        "適合 onboarding 後仍要提示 tab 名稱的產品"
+      ],
+      "visualSpec": {
+        "active": "較寬 pill：icon + label；邊框或淡底用 violet／cyan",
+        "inactive": "只顯示 icon，略細／灰",
+        "motion": "active 變闊、label slide-in；舊 active 收起 label、變窄",
+        "timing": "suggested ~320–420ms ease；label 可 delay ~40ms"
+      },
+      "steps": [
+        "每個 tab：icon + .label（overflow hidden）",
+        "Active class 控制 flex／max-width 同 label 可見",
+        "用 transition 動畫 max-width／padding；label translateX + opacity",
+        "確保收合時仍可點；hit target ≥44px",
+        "reduced-motion：即時切闊度，無 slide"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：選中展開顯示 label",
+          "content": [
+            "Icon + 文字都需要，但横向不夠同時顯示全部 label",
+            "Tab 3–5 個；希望選中項自解釋",
+            "適合 onboarding 後仍要提示 tab 名稱的產品"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：active 展開 pill + label 滑出",
+          "content": {
+            "active": "較寬 pill：icon + label；邊框或淡底用 violet／cyan",
+            "inactive": "只顯示 icon，略細／灰",
+            "motion": "active 變闊、label slide-in；舊 active 收起 label、變窄",
+            "timing": "suggested ~320–420ms ease；label 可 delay ~40ms"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "Flex／grid 重新分配寬度：active flex-grow 大",
+            "Label 由 width 0／opacity 0／translateX 滑入",
+            "舊 tab 反向收合"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "每個 tab：icon + .label（overflow hidden）",
+            "Active class 控制 flex／max-width 同 label 可見",
+            "用 transition 動畫 max-width／padding；label translateX + opacity",
+            "確保收合時仍可點；hit target ≥44px",
+            "reduced-motion：即時切闊度，無 slide"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS：flex 寬度 + label overflow 動畫",
+          "content": [
+            "flex: 1 1 0 於 inactive；active: flex: 1.6 1 auto; 或固定 max-width 動畫",
+            "label { overflow:hidden; white-space:nowrap; max-width:0 → ~72px }",
+            "pill border: 1px solid #8B5CF6; 或 soft bg rgba(139,92,246,.2)",
+            "唔好用令整行 reflow 過度的字級突變"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：描邊 pill vs 實心 chip",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel outline pill",
+              "description": "描邊 pill + label 滑出（Part 1 #5）。"
+            },
+            {
+              "id": "B",
+              "name": "Filled chip",
+              "description": "active 用實心淡紫底 chip；更易見。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：熱區過細、無障碍缺失、長 label 硬塞",
+          "content": [
+            "唔好令 inactive hit area 細過 ~44×44",
+            "唔好 label 截斷關鍵字無 title／aria",
+            "唔好六個長文 label 硬展開——改短文案"
+          ]
+        }
+      ],
+      "cssNotes": [
+        "flex: 1 1 0 於 inactive；active: flex: 1.6 1 auto; 或固定 max-width 動畫",
+        "label { overflow:hidden; white-space:nowrap; max-width:0 → ~72px }",
+        "pill border: 1px solid #8B5CF6; 或 soft bg rgba(139,92,246,.2)",
+        "唔好用令整行 reflow 過度的字級突變"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel outline pill",
+          "description": "描邊 pill + label 滑出（Part 1 #5）。"
+        },
+        {
+          "id": "B",
+          "name": "Filled chip",
+          "description": "active 用實心淡紫底 chip；更易見。"
+        }
+      ],
+      "dontDo": [
+        "唔好令 inactive hit area 細過 ~44×44",
+        "唔好 label 截斷關鍵字無 title／aria",
+        "唔好六個長文 label 硬展開——改短文案"
+      ],
+      "demo": "demos/tab-bar-expanding-label.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：選中展開顯示 label",
+          "does": "幾時用：選中展開顯示 label"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：active 展開 pill + label 滑出",
+          "does": "視覺規格：active 展開 pill + label 滑出"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS：flex 寬度 + label overflow 動畫",
+          "does": "CSS：flex 寬度 + label overflow 動畫"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：描邊 pill vs 實心 chip",
+          "does": "變體：描邊 pill vs 實心 chip"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：熱區過細、無障碍缺失、長 label 硬塞",
+          "does": "唔好做：熱區過細、無障碍缺失、長 label 硬塞"
+        }
+      ],
+      "mechanism": [
+        "Flex／grid 重新分配寬度：active flex-grow 大",
+        "Label 由 width 0／opacity 0／translateX 滑入",
+        "舊 tab 反向收合"
+      ]
+    },
+    {
+      "id": "tab-bar-bubble-float",
+      "title": "Bubble Float",
+      "description": "Bubble Float：撳 tab 後 icon 微微上浮並發光（violet／cyan glow），同時由 icon 附近冒出多個空心氣泡向上飄散再 pop 消失。可選下方小指示點。感覺輕盈、慶祝感，適合消費／社群類；粒子數要克制以免低端機掉幀。實作：icon translateY(-4～8px) + filter/shadow；氣泡用幾個絕對定位 span 或 canvas 粒子。",
+      "summary": "The tapped icon lifts and glows while bubbles float up from it and pop.",
+      "category": "tab-bar",
+      "categoryLabel": "Tab Bar 動畫",
+      "tags": [
+        "tab-bar",
+        "part-1",
+        "microinteraction",
+        "bubble",
+        "particles",
+        "glow"
+      ],
+      "whenToApply": [
+        "想要愉悅、輕量的選中慶祝感（社群／消費）",
+        "可接受短暫粒子；tab 數唔多",
+        "bar 本身保持簡潔，重點喺 icon 同氣泡"
+      ],
+      "visualSpec": {
+        "icon": "active icon 上浮、cyan／violet glow；可選底小點",
+        "bubbles": "2–6 個空心圓，由 icon 附近向上飄，尺寸不一，到頂 opacity 0／pop",
+        "bar": "深色平坦 bar",
+        "timing": "suggested lift ~250ms；bubbles ~500–700ms stagger"
+      },
+      "steps": [
+        "Active：transform translateY(-6px) + drop-shadow／box-shadow glow",
+        "喺 tab 內建 bubble layer；click 時 spawn 3–5 個 .bubble",
+        "每個 bubble 獨立 @keyframes（translateY、-opacity、輕微 scale）",
+        "animationend 移除 DOM；限制同時粒子數",
+        "reduced-motion：只改色／小點，無氣泡、無上浮"
+      ],
+      "sections": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：慶祝感氣泡／上浮回饋",
+          "content": [
+            "想要愉悅、輕量的選中慶祝感（社群／消費）",
+            "可接受短暫粒子；tab 數唔多",
+            "bar 本身保持簡潔，重點喺 icon 同氣泡"
+          ]
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：icon 上浮 glow + 氣泡上飄",
+          "content": {
+            "icon": "active icon 上浮、cyan／violet glow；可選底小點",
+            "bubbles": "2–6 個空心圓，由 icon 附近向上飄，尺寸不一，到頂 opacity 0／pop",
+            "bar": "深色平坦 bar",
+            "timing": "suggested lift ~250ms；bubbles ~500–700ms stagger"
+          }
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "content": [
+            "Tap → icon lift + glow on",
+            "生成少數 bubble 元素，各自隨機 X 偏移向上動畫後移除",
+            "舊 tab icon 回落、熄 glow、清粒子"
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "content": [
+            "Active：transform translateY(-6px) + drop-shadow／box-shadow glow",
+            "喺 tab 內建 bubble layer；click 時 spawn 3–5 個 .bubble",
+            "每個 bubble 獨立 @keyframes（translateY、-opacity、輕微 scale）",
+            "animationend 移除 DOM；限制同時粒子數",
+            "reduced-motion：只改色／小點，無氣泡、無上浮"
+          ]
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／JS：粒子 span + lift glow",
+          "content": [
+            ".bubble { border:1.5px solid #22D3EE; border-radius:50%; position:absolute; pointer-events:none }",
+            "@keyframes floatPop { to { transform: translateY(-36px) scale(1.2); opacity:0 } }",
+            "Glow：filter: drop-shadow(0 0 6px #22D3EE) 或 text-shadow",
+            "will-change 用完即清；避免無限 setInterval spawn"
+          ]
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：完整氣泡 vs 只 glow",
+          "content": [
+            {
+              "id": "A",
+              "name": "Reel bubbles",
+              "description": "多粒空心青泡上飄 + icon lift（Part 1 #6）。"
+            },
+            {
+              "id": "B",
+              "name": "Glow only",
+              "description": "只有上浮 glow 同底點，無粒子（更省電）。"
+            }
+          ]
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：粒子過多、擋點擊、無視 reduced-motion",
+          "content": [
+            "唔好一次 spawn 十幾粒粒子",
+            "唔好氣泡擋住其他 tab 點擊（pointer-events:none）",
+            "唔好忽略 reduced-motion／低電量模式"
+          ]
+        }
+      ],
+      "cssNotes": [
+        ".bubble { border:1.5px solid #22D3EE; border-radius:50%; position:absolute; pointer-events:none }",
+        "@keyframes floatPop { to { transform: translateY(-36px) scale(1.2); opacity:0 } }",
+        "Glow：filter: drop-shadow(0 0 6px #22D3EE) 或 text-shadow",
+        "will-change 用完即清；避免無限 setInterval spawn"
+      ],
+      "variants": [
+        {
+          "id": "A",
+          "name": "Reel bubbles",
+          "description": "多粒空心青泡上飄 + icon lift（Part 1 #6）。"
+        },
+        {
+          "id": "B",
+          "name": "Glow only",
+          "description": "只有上浮 glow 同底點，無粒子（更省電）。"
+        }
+      ],
+      "dontDo": [
+        "唔好一次 spawn 十幾粒粒子",
+        "唔好氣泡擋住其他 tab 點擊（pointer-events:none）",
+        "唔好忽略 reduced-motion／低電量模式"
+      ],
+      "demo": "demos/tab-bar-bubble-float.html",
+      "source": "Instagram reel DfLt74CjduQ · ui_motion_prompts · Tab Bar Part 1（タブの切り替えの演出 その1）https://www.instagram.com/reel/DfLt74CjduQ/",
+      "prompts": [
+        {
+          "id": "whenToApply",
+          "title": "觸發條件／幾時用",
+          "purpose": "幾時用：慶祝感氣泡／上浮回饋",
+          "does": "幾時用：慶祝感氣泡／上浮回饋"
+        },
+        {
+          "id": "visualSpec",
+          "title": "視覺規格",
+          "purpose": "視覺規格：icon 上浮 glow + 氣泡上飄",
+          "does": "視覺規格：icon 上浮 glow + 氣泡上飄"
+        },
+        {
+          "id": "mechanism",
+          "title": "機制",
+          "purpose": "呢段係：機制說明（點解係呢種動效）",
+          "does": "呢段係：機制說明（點解係呢種動效）"
+        },
+        {
+          "id": "steps",
+          "title": "實作步驟",
+          "purpose": "呢段係：實作步驟",
+          "does": "呢段係：實作步驟"
+        },
+        {
+          "id": "cssNotes",
+          "title": "CSS／互動要點",
+          "purpose": "CSS／JS：粒子 span + lift glow",
+          "does": "CSS／JS：粒子 span + lift glow"
+        },
+        {
+          "id": "variants",
+          "title": "變體",
+          "purpose": "變體：完整氣泡 vs 只 glow",
+          "does": "變體：完整氣泡 vs 只 glow"
+        },
+        {
+          "id": "dontDo",
+          "title": "唔好做咩",
+          "purpose": "唔好做：粒子過多、擋點擊、無視 reduced-motion",
+          "does": "唔好做：粒子過多、擋點擊、無視 reduced-motion"
+        }
+      ],
+      "mechanism": [
+        "Tap → icon lift + glow on",
+        "生成少數 bubble 元素，各自隨機 X 偏移向上動畫後移除",
+        "舊 tab icon 回落、熄 glow、清粒子"
       ]
     }
   ]

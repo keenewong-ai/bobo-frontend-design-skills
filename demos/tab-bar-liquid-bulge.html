@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAB · Liquid Bulge</title>
+<style>
+:root{--bg:#131f24;--panel:#0f171b;--text:#E8EEF1;--muted:#8FA3AD;--border:#2c3c44;--v:#8B5CF6;--c:#22D3EE}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","PingFang HK",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px}
+h1{font-size:16px;margin:0 0 4px;font-weight:900}.lead{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
+.phone{max-width:340px;background:var(--panel);border:2px solid var(--border);border-radius:18px;overflow:hidden}
+.screen{height:110px;display:grid;place-items:center;color:var(--muted);font-size:13px;font-weight:800;border-bottom:1px dashed #2c3c44}
+.wrap-bar{background:#16161c;padding:18px 8px 12px;position:relative;overflow:hidden}
+.bulge{position:absolute;top:2px;width:88px;height:52px;border-radius:40% 40% 18px 18px;left:0;
+background:linear-gradient(135deg,var(--v),var(--c));filter:blur(0);opacity:.95;
+box-shadow:0 0 22px rgba(34,211,238,.35);transition:transform .52s cubic-bezier(.25,.8,.25,1);pointer-events:none;z-index:0}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:1}
+.tab{border:0;background:transparent;color:#7a7a8a;cursor:pointer;font-family:inherit;
+display:flex;flex-direction:column;align-items:center;gap:4px;min-height:52px;-webkit-tap-highlight-color:transparent}
+.tab .ico{font-size:20px}.tab .lbl{font-size:10px;font-weight:800}.tab.is-active{color:#fff}
+</style>
+</head>
+<body>
+<h1>TAB · Liquid Bulge</h1>
+<p class="lead">點 tab · 鼓起如液體流過去 · Part 1 #2（近似 demo）</p>
+<div class="phone">
+  <div class="screen" id="screen">Home</div>
+  <div class="wrap-bar">
+    <div class="bulge" id="bulge"></div>
+    <nav class="bar" id="bar">
+      <button class="tab is-active" type="button" data-i="0" data-n="Home"><span class="ico">⌂</span><span class="lbl">Home</span></button>
+      <button class="tab" type="button" data-i="1" data-n="Search"><span class="ico">⌕</span><span class="lbl">Search</span></button>
+      <button class="tab" type="button" data-i="2" data-n="Likes"><span class="ico">♥</span><span class="lbl">Likes</span></button>
+      <button class="tab" type="button" data-i="3" data-n="Profile"><span class="ico">☺</span><span class="lbl">Profile</span></button>
+    </nav>
+  </div>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('bar'),bulge=document.getElementById('bulge'),screen=document.getElementById('screen');
+  const wrap=bar.parentElement; const tabs=[...bar.querySelectorAll('.tab')];
+  function place(i){
+    const t=tabs[i],r=t.getBoundingClientRect(),br=wrap.getBoundingClientRect();
+    const left=r.left-br.left+(r.width-88)/2;
+    bulge.style.transform=`translateX(${left}px)`;
+    tabs.forEach(x=>x.classList.toggle('is-active',x===t));
+    screen.textContent=t.dataset.n;
+  }
+  place(0);
+  bar.addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;place(+t.dataset.i);});
+})();
+</script>
+</body></html>
